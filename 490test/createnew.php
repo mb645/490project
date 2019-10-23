@@ -1,49 +1,44 @@
 <?php
-print "Hello<br><br>" ;
-error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);  
-ini_set('display_errors' , 1);
+//^^ #!/usr/bin/php
 include ("myfunctions.php");
 
-$hostname = "localhost"     ;
-$username = "user1" ;
-$project  = "490accounts" ;
-$password = "user1" ;
 
 
-$db = mysqli_connect($hostname,$username, $password ,$project);
-if (mysqli_connect_errno())
-  {
-	  echo "Failed to connect to MySQL: " . mysqli_connect_error();
-	  exit();
-  }
-print "Successfully connected to MySQL.<br><br>";
-mysqli_select_db( $db, $project ); 
+
+require_once('path.inc');
+require_once('get_host_info.inc');
+require_once('rabbitMQLib.inc');
+
+$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+if (isset($argv[1]))
+{
+  $msg = $argv[1];
+}
+else
+{
+  $msg = "test message";
+}
 
 $flag = false;
 $uname = GET("username", $flag);
 $pword = GET("password", $flag);
+$pword2 = GET("password2", $flag);
 $email = GET("email", $flag);
 if ($flag) {exit("<br><br>empty input field");};
+if ($pword != $pword2){exit("<br><br>passwords do not match");};
 
-global $t;
-$s = "select * from accounts where username = '$uname'";
-print "SQL select statement is: $s<br><br>"; 
-($t = mysqli_query ( $db,  $s   ) )  or die ( mysqli_error ($db) );
-$num = mysqli_num_rows($t);
+$request = array();
+$request['type'] = "createNew";
+$request['username'] = $uname;
+$request['password'] = $pword;
+$request['email'] = $email;
+$request['message'] = $msg;
+$response = $client->send_request($request);
+//$response = $client->publish($request);
 
-if ($num > 0)
-{
-exit("username taken");
-}
+echo "client received response: ".PHP_EOL;
+print_r($response);
+echo "\n\n";
 
+echo $argv[0]." END".PHP_EOL;
 
-global $t;
-$s = "insert into accounts values ('$uname', '$pword', '$email')";
-print "SQL select statement is: $s<br><br>";
-($t = mysqli_query ( $db,  $s   ) )  or die ( mysqli_error ($db) );
-
-
-mysqli_close($db);
-echo "<br><br>";
-exit("account created try logging in");
-?>

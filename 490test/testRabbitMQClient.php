@@ -35,7 +35,16 @@ $response = $client->send_request($request);
 
 echo "client received response: ".PHP_EOL;
 print_r($response);
+print "<br><br>";
+if ($response)
+{
+	echo "log in successful";
+}
+if (!$response)
+{
+	echo "incorrect username/password";
+}
 echo "\n\n";
-
+print "<br><br>";
 echo $argv[0]." END".PHP_EOL;
 

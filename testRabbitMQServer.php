@@ -51,10 +51,46 @@ return true;
 
 
 
-function createNew($username, $password)
+function createNew($username, $password, $email)
 {
+    $hostname = "localhost";
+    $mname = "user1";
+    $project = "490accounts";
+    $mword = "user1";
 
+   $db = mysqli_connect($hostname,$mname, $mword ,$project);
+if (mysqli_connect_errno())
+  {
+          echo "Failed to connect to MySQL: " . mysqli_connect_error();
+          exit();
+  }
+print "Successfully connected to MySQL ... ";
 
+mysqli_select_db( $db, $project );
+
+$s = "select * from accounts where username = '$username'";
+print "SQL select statement is: $s ... ";
+($t = mysqli_query ( $db,  $s   ) ); 
+//or die ( mysqli_error ($db) );
+$num = mysqli_num_rows($t);
+
+if ($num > 0)
+{
+	print "username taken ... ";
+	return false;
+}
+else
+{
+	print "username not taken ... ";
+}
+
+$s = "insert into accounts values ('$username', '$password', '$email')";
+print "SQL select statement is: $s ... ";
+($t = mysqli_query ( $db,  $s   ) );
+      //	or die ( mysqli_error ($db) );
+print "new account created ... ";
+mysqli_close($db);
+return true;
 }
 
 
@@ -71,7 +107,9 @@ function requestProcessor($request)
   switch ($request['type'])
   {
     case "login":
-      return doLogin($request['username'],$request['password']);
+	    return doLogin($request['username'],$request['password']);
+case "createNew":
+	return createNew($request['username'],$request['password'],$request['email']);
     case "validate_session":
       return doValidate($request['sessionId']);
   } 
