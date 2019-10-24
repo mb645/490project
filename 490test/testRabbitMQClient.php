@@ -1,5 +1,6 @@
 <?php
 //^^ #!/usr/bin/php
+session_start();
 include ("myfunctions.php");
 
 
@@ -36,15 +37,21 @@ $response = $client->send_request($request);
 echo "client received response: ".PHP_EOL;
 print_r($response);
 print "<br><br>";
-if ($response)
-{
-	echo "log in successful";
-}
+
 if (!$response)
 {
 	echo "incorrect username/password";
+	exit();
+}
+if ($response)
+{
+        echo "login successful";
+	$_SESSION['logged'] = true;
+	$_SESSION['username'] = $uname;
+	header("refresh:2; url = homepage.php");
 }
 echo "\n\n";
 print "<br><br>";
 echo $argv[0]." END".PHP_EOL;
-
+exit();
+?>

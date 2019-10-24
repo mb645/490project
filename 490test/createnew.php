@@ -38,7 +38,19 @@ $response = $client->send_request($request);
 
 echo "client received response: ".PHP_EOL;
 print_r($response);
+echo "<br><br>";
 echo "\n\n";
-
 echo $argv[0]." END".PHP_EOL;
+if (!$response)
+{
+echo "<br><br>username already taken";
+}
 
+if ($response)
+{
+echo "<br><b?r>try logging in";
+header("refresh:3; url = login.html");
+exit();
+}
+
+?>
