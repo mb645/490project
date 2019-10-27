@@ -7,7 +7,7 @@ function GET($fieldname, &$flag)
 	if ($v == "")
 	{$flag = true; echo "<br><br>$fieldname is empty."; return;};
 //	$v = mysqli_real_escape_string ($db, $v);
-	echo "$fieldname is $v.<br><br>";
+//	echo "$fieldname is $v.<br><br>";
 	return $v;
 }
 
